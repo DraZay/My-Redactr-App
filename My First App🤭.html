@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Redactr</title>
+  <style>
+    body {
+      font-family: 'Roboto', Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 40px;
+      background-color: white;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #333;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #555;
+    }
+    textarea, input {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    button {
+      display: block;
+      width: 100%;
+      padding: 12px 20px;
+      font-size: 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    #stats {
+      margin-top: 30px;
+      font-size: 14px;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Redactr</h1>
+    <div class="form-group">
+      <label for="content">Enter your content:</label>
+      <textarea id="content" rows="8" placeholder="Type or paste your content here"></textarea>
+    </div>
+    <div class="form-group">
+      <label for="words-to-scramble">Words to scramble (separated by space):</label>
+      <input type="text" id="words-to-scramble" placeholder="Enter the words to scramble">
+    </div>
+    <div class="form-group">
+      <label for="replacement-chars">Replacement characters (default: *)</label>
+      <input type="text" id="replacement-chars" placeholder="Enter the replacement characters" value="*">
+    </div>
+    <button onclick="redactContent()">Redact Now</button>
+    <div id="stats"></div>
+  </div>
+
+  <script>
+    function redactContent() {
+     const contentInput = document.getElementById('content');
+  const wordsToScrambleInput = document.getElementById('words-to-scramble');
+  const replacementCharsInput = document.getElementById('replacement-chars');
+
+  const originalContent = contentInput.value;
+  const wordsToScramble = wordsToScrambleInput.value.split(' ');
+  const replacementChars = replacementCharsInput.value || '*';
+
+  const startTime = performance.now();
+
+  let redactedContent = '';
+  let totalWordsScanned = 0;
+  let totalWordsMatched = 0;
+  let totalCharsScrambled = 0;
+
+  const words = originalContent.split(' ');
+  for (let i = 0; i < words.length; i++) {
+    const word = words[i];
+    if (wordsToScramble.includes(word)) {
+      const scrambledWord = replacementChars.repeat(word.length);
+      redactedContent += scrambledWord;
+      totalWordsMatched++;
+      totalCharsScrambled += word.length;
+    } else {
+      redactedContent += word;
+    }
+    redactedContent += ' ';
+    totalWordsScanned++;
+  }
+
+  const endTime = performance.now();
+  const timeTaken = ((endTime - startTime) / 1000).toFixed(2);
+
+  const statsElement = document.getElementById('stats');
+  statsElement.innerHTML = `
+    <p>Words scanned: ${totalWordsScanned}</p>
+    <p>Words matched: ${totalWordsMatched}</p>
+    <p>Characters scrambled: ${totalCharsScrambled}</p>
+    <p>Time taken: ${timeTaken} seconds</p>
+  `;
+
+  contentInput.value = redactedContent.trim();
+}
+  </script>
+</body>
+</html>
